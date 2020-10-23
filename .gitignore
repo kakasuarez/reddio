@@ -1,0 +1,8 @@
+__pycache__/
+.vscode/
+audios/
+videos/
+images/
+geckodriver.log
+praw.ini
+authenticate.py
