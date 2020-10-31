@@ -1,14 +1,47 @@
+import sys
+import getopt
 import praw
 from authenticate import authenticate
 from screenshot_capture import Capturer
 
+def input_help(exit_code=0):
+	"""
+	Provides help with command line arguments and exits the process with the given exit code.
+	"""
+	print("reddit_bot.py -s <subreddit expression> -p <post limit> -c <last_comment_number>")
+	print("reddit_bot.py -s <subreddit expression> --pl <post limit> --cl <last_comment_number>")
+	print("reddit_bot.py --subreddit <subreddit expression> --post_limit <post limit> --last_comment_number <comment limit>")
+	sys.exit(exit_code)
+
+def get_args(options):
+	"""
+	Takes the options list and returns the chosen `subreddit`, `post_limit`, and `last_comment_number`. If some options are not provided, returns the default values for them. If a different option is provided, invokes the `input_help` function.
+	"""
+	subreddit = "AskReddit"
+	post_limit = 10
+	last_comment_number = 3
+	for option, argument in options:
+		if option in ("-h", "--help"):
+			input_help()
+		elif option in ("-s", "--subreddit"):
+			subreddit = argument
+		elif option in ("-p", "--pl", "--post_limit"):
+			post_limit = int(argument)
+		elif option in ("-c", "--lcn", "--last_comment_number"):
+			last_comment_number = int(argument)
+		else:
+			input_help(1)
+	return subreddit, post_limit, last_comment_number
+
 def main():
+	try:
+		options, arguments = getopt.getopt(sys.argv[1:], "s:p:c:h", ["subreddit=", "post_limit=", "pl=", "last_comment_number=", "cl=", "help"])
+	except getopt.GetoptError:
+		input_help(2)
+	subreddit, post_limit, last_comment_number = get_args(options)
 	post_number = 1
 	cpt = Capturer()
 	reddit = authenticate()
-	subreddit = input("""Please enter the subreddit (leave blank for "AskReddit") : \n""") or "AskReddit"
-	post_limit = int(input("""Please specify the limit of posts (leave blank for "10") : \n""") or "10")
-	last_comment_number = int(input("""Please specify the number of comments (leave blank for "3") : \n""") or "3")
 	print("Starting\n")
 	for post in reddit.subreddit(subreddit).hot(limit=post_limit):
 		if not post.stickied and not post.over_18 and not post.spoiler:
