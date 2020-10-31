@@ -1,4 +1,3 @@
-import getopt
 import sys
 
 import praw
