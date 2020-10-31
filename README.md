@@ -8,6 +8,8 @@ A simple project which generates videos with audio and images of hot posts on re
 
  - Clone the repository.
  - Create a reddit application from the [official reddit website](https://www.reddit.com/prefs/apps/).
+ - Install the `virtualenv` library: `pip install virtualenv`.
+ - Create a virtual environment: `python -m venv env`.
  - Start the virtual environment (```env\Scripts\activate``` on Windows).
  - Install the libraries required: ```pip install -r requirements.txt```.
  - Create a `praw.ini` file in the working directory as described [here](https://praw.readthedocs.io/en/latest/getting_started/configuration/prawini.html).
