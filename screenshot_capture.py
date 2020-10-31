@@ -1,13 +1,12 @@
 import os
-from time import sleep
-from selenium import webdriver
-from PIL import Image
-from gtts import gTTS
 from shutil import rmtree
-from moviepy.editor import ImageClip, VideoFileClip, AudioFileClip, concatenate_videoclips
-# from moviepy.video.io.VideoFileClip import VideoFileClip
-# from moviepy.audio.io.AudioFileClip import AudioFileClip
-# from moviepy.video.compositing.concatenate import concatenate_videoclips
+from time import sleep
+
+from gtts import gTTS
+from moviepy.editor import (AudioFileClip, ImageClip, VideoFileClip,
+                            concatenate_videoclips)
+from PIL import Image
+from selenium import webdriver
 
 
 class Capturer:
