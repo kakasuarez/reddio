@@ -7,13 +7,12 @@ from authenticate import authenticate
 from capture import Capturer
 
 
-def main():
-	options = get_options(sys.argv[1:])
-	subreddit, post_limit, comment_limit = get_args(options)
+def scrape_reddit(reddit: praw.Reddit, subreddit: praw.models.reddit.subreddit.Subreddit, post_limit: int, comment_limit: int) -> None:
+	"""
+	Scrapes reddit, captures images, videos, and audios and creates the final video.
+	"""
 	post_number = 1
 	cpt = Capturer()
-	reddit = authenticate()
-	print("Starting\n")
 	for post in reddit.subreddit(subreddit).hot(limit=post_limit):
 		if not post.stickied and not post.over_18 and not post.spoiler:
 			# * Post is safe
@@ -39,6 +38,15 @@ def main():
 				comment_number +=  1
 			post_number += 1
 	cpt.create_final_video(post_number, comment_limit)
+
+
+
+def main():
+	options = get_options(sys.argv[1:])
+	subreddit, post_limit, comment_limit = get_args(options)
+	reddit = authenticate()
+	print("Starting\n")
+	scrape_reddit(reddit, subreddit, post_limit, comment_limit)
 
 
 
