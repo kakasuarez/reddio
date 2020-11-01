@@ -7,6 +7,13 @@ from authenticate import authenticate
 from capture import Capturer
 
 
+def is_safe(post: praw.models.reddit.submission.Submission) -> bool:
+	"""
+	Takes a post and returns whether it is safe to put in a video.
+	"""
+	return not post.stickied and not post.over_18 and not post.spoiler
+
+
 def scrape_reddit(reddit: praw.Reddit, subreddit: praw.models.reddit.subreddit.Subreddit, post_limit: int, comment_limit: int) -> None:
 	"""
 	Scrapes reddit, captures images, videos, and audios and creates the final video.
@@ -14,8 +21,7 @@ def scrape_reddit(reddit: praw.Reddit, subreddit: praw.models.reddit.subreddit.S
 	post_number = 1
 	cpt = Capturer()
 	for post in reddit.subreddit(subreddit).hot(limit=post_limit):
-		if not post.stickied and not post.over_18 and not post.spoiler:
-			# * Post is safe
+		if is_safe(post):
 			title = post.title
 			author = post.author
 			url = post.url
