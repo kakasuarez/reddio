@@ -14,6 +14,27 @@ def is_safe(post: praw.models.reddit.submission.Submission) -> bool:
 	return not post.stickied and not post.over_18 and not post.spoiler
 
 
+def save_comments(post: praw.models.reddit.submission.Submission, cpt: Capturer, post_number: int, comment_limit: int) -> None:
+	"""
+	Takes a post and creates images, audios, and videos for its comments.
+	"""
+	# * Setting up comments
+	post.comment_sort = "top"
+	comment_number = 1
+	# * Getting top comments and saving
+	for comment in post.comments:
+		if comment.stickied:
+			# * Skip stickied comments (most likely bot or moderator comments)
+			continue
+		cpt.create_screenshot(comment.permalink, post_number, is_comment=True, comment_number=comment_number)
+		cpt.create_speech(f"{comment.author} said: {comment.body}", post_number, is_comment=True, comment_number=comment_number)
+		cpt.create_videoclip(post_number, is_comment=True,  comment_number=comment_number)
+		if comment_number == comment_limit:
+			break
+		comment_number +=  1
+
+
+
 def scrape_reddit(reddit: praw.Reddit, subreddit: praw.models.reddit.subreddit.Subreddit, post_limit: int, comment_limit: int) -> None:
 	"""
 	Scrapes reddit, captures images, videos, and audios and creates the final video.
@@ -29,19 +50,7 @@ def scrape_reddit(reddit: praw.Reddit, subreddit: praw.models.reddit.subreddit.S
 			cpt.create_screenshot(url, post_number)
 			cpt.create_speech(f"Question by {author}: {title}", post_number)
 			cpt.create_videoclip(post_number)
-			post.comment_sort = "top"
-			comment_number = 1
-			# * Getting top comments and saving
-			for comment in post.comments:
-				if comment.stickied:
-					# * Skip stickied comments (most likely bot or moderator comments)
-					continue
-				cpt.create_screenshot(comment.permalink, post_number, is_comment=True, comment_number=comment_number)
-				cpt.create_speech(f"{comment.author} said: {comment.body}", post_number, is_comment=True, comment_number=comment_number)
-				cpt.create_videoclip(post_number,is_comment=True,  comment_number=comment_number)
-				if comment_number == comment_limit:
-					break
-				comment_number +=  1
+			save_comments(post, cpt, post_number, comment_limit)
 			post_number += 1
 	cpt.create_final_video(post_number, comment_limit)
 
