@@ -4,7 +4,7 @@ import praw
 
 from argument_help import get_args, get_options
 from authenticate import authenticate
-from screenshot_capture import Capturer
+from capture import Capturer
 
 
 def main():
