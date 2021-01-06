@@ -16,9 +16,9 @@ def input_help(exit_code=0):
 	"""
 	Provides help with command line arguments and exits the process with the given exit code.
 	"""
-	print("reddit_bot.py -s <subreddit expression> -p <post limit> -c <comment_limit>")
-	print("reddit_bot.py -s <subreddit expression> --pl <post limit> --cl <comment_limit>")
-	print("reddit_bot.py --subreddit <subreddit expression> --post_limit <post limit> --comment_limit <comment limit>")
+	print("python bot.py -s <subreddit expression> -p <post limit> -c <comment_limit>")
+	print("python bot.py -s <subreddit expression> --pl <post limit> --cl <comment_limit>")
+	print("python bot.py --subreddit <subreddit expression> --post_limit <post limit> --comment_limit <comment limit>")
 	sys.exit(exit_code)
 
 def get_args(options):
