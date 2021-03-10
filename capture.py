@@ -23,7 +23,7 @@ class Capturer:
 			print(f"Creating new directory {directory}\n")
 			os.mkdir(directory)
 	
-	def create_screenshot(self, url, post_number,is_comment=False,  comment_number=0):
+	def create_screenshot(self, url, post_number,is_comment=False, comment_number=0):
 		"""
 		Takes a screenshot of the given url and crops it.
 		"""
