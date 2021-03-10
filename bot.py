@@ -48,7 +48,7 @@ def scrape_reddit(reddit: praw.Reddit, subreddit: praw.models.reddit.subreddit.S
 			url = post.url
 			# Getting the post and saving
 			cpt.create_screenshot(url, post_number)
-			cpt.create_speech(f"Question by {author}: {title}", post_number)
+			cpt.create_speech(f"Post by {author}: {title}", post_number)
 			cpt.create_videoclip(post_number)
 			save_comments(post, cpt, post_number, comment_limit)
 			post_number += 1
