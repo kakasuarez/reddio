@@ -12,13 +12,13 @@ from selenium import webdriver
 class Capturer:
 	def __init__(self):
 		directories = ["audios", "videos", "images"]
-		# * Clear out everything from the directories and remove them
+		# Clear out everything from the directories and remove them
 		for directory in directories:
 			if os.path.exists(directory):
 				print(f"Directory {directory} found, clearing it\n")
 				rmtree(directory)
 
-		# * Create fresh directories
+		# Create fresh directories
 		for directory in directories:
 			print(f"Creating new directory {directory}\n")
 			os.mkdir(directory)

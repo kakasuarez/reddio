@@ -18,13 +18,13 @@ def save_comments(post: praw.models.reddit.submission.Submission, cpt: Capturer,
 	"""
 	Takes a post and creates images, audios, and videos for its comments.
 	"""
-	# * Setting up comments
+	# Setting up comments
 	post.comment_sort = "top"
 	comment_number = 1
-	# * Getting top comments and saving
+	# Getting top comments and saving
 	for comment in post.comments:
 		if comment.stickied:
-			# * Skip stickied comments (most likely bot or moderator comments)
+			# Skip stickied comments (most likely bot or moderator comments)
 			continue
 		cpt.create_screenshot(comment.permalink, post_number, is_comment=True, comment_number=comment_number)
 		cpt.create_speech(f"{comment.author} said: {comment.body}", post_number, is_comment=True, comment_number=comment_number)
@@ -46,7 +46,7 @@ def scrape_reddit(reddit: praw.Reddit, subreddit: praw.models.reddit.subreddit.S
 			title = post.title
 			author = post.author
 			url = post.url
-			# * Getting the post and saving
+			# Getting the post and saving
 			cpt.create_screenshot(url, post_number)
 			cpt.create_speech(f"Question by {author}: {title}", post_number)
 			cpt.create_videoclip(post_number)
