@@ -22,6 +22,11 @@ class Capturer:
 		for directory in directories:
 			print(f"Creating new directory {directory}\n")
 			os.mkdir(directory)
+		
+		self.driver = webdriver.Firefox()
+
+	def __del__(self):
+		self.driver.quit()
 	
 	def create_screenshot(self, url, post_number,is_comment=False, comment_number=0):
 		"""
@@ -33,26 +38,24 @@ class Capturer:
 			url = "https://reddit.com" + url
 			class_name = "Comment"
 			save_path = f"images/post_{post_number}_comment_{comment_number}_uncropped.png"
-		with webdriver.Firefox() as driver:
-			try:
-				print(f"Going to url {url}\n")
-				driver.get(url)
-			except:
-				print(f"Got an error, retrying in 5 seconds\n")
-				sleep(5)
-				driver.get(url)
-			
-			print(f"Creating screenshot {save_path}\n")
-			driver.save_screenshot(save_path)
-
-			element = driver.find_element_by_class_name(class_name)
-			location = element.location
-			size = element.size
-			x = int(location["x"])
-			y = int(location["y"])
-			width =  x + int(size['width'])
-			height = y + int(size['height'])
-			self.__crop_screenshot(x, y, width, height, post_number, save_path)
+		try:
+			print(f"Going to url {url}\n")
+			self.driver.get(url)
+		except:
+			print(f"Got an error, retrying in 5 seconds\n")
+			sleep(5)
+			self.driver.get(url)
+		
+		print(f"Creating screenshot {save_path}\n")
+		self.driver.save_screenshot(save_path)
+		element = self.driver.find_element_by_class_name(class_name)
+		location = element.location
+		size = element.size
+		x = int(location["x"])
+		y = int(location["y"])
+		width =  x + int(size['width'])
+		height = y + int(size['height'])
+		self.__crop_screenshot(x, y, width, height, post_number, save_path)
 
 	def __crop_screenshot(self, x, y, width, height, post_number, uncropped_path):
 		"""
