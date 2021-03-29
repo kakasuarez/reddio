@@ -7,3 +7,4 @@ images/
 geckodriver.log
 praw.ini
 authenticate.py
+thumbnail.png
