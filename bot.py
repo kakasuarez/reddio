@@ -11,7 +11,7 @@ def is_safe(post: praw.models.reddit.submission.Submission) -> bool:
 	"""
 	Takes a post and returns whether it is safe to put in a video.
 	"""
-	return not post.stickied and not post.over_18 and not post.spoiler
+	return not post.stickied and not post.over_18 and not post.spoiler and post.is_self
 
 
 def save_comments(post: praw.models.reddit.submission.Submission, cpt: Capturer, post_number: int, comment_limit: int) -> None:
