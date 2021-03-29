@@ -106,7 +106,7 @@ class Capturer:
 				video_paths.append(f"videos/post_{i}_comment_{j}.mp4")
 				videos.append(VideoFileClip(f"videos/post_{i}_comment_{j}.mp4"))
 		final_clip = concatenate_videoclips(videos, method="compose")
-		final_clip.write_videofile("videos/final_video.avi", temp_audiofile='temp-audio-final.m4a', remove_temp=True, codec="png", audio_codec="aac", preset="medium", fps=24)
+		final_clip.write_videofile("videos/final_video.mov", temp_audiofile='temp-audio-final.m4a', remove_temp=True, codec="mpeg4", audio_codec="aac", preset="medium", fps=24)
 		# Now that everything is done, remove the intermediate videos, audios and images
 		for video in video_paths:
 			print(f"Removing video {video}\n")
