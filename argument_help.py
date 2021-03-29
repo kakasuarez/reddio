@@ -16,9 +16,9 @@ def input_help(exit_code=0):
 	"""
 	Provides help with command line arguments and exits the process with the given exit code.
 	"""
-	print("python bot.py -s <subreddit expression> -p <post limit> -c <comment_limit>")
-	print("python bot.py -s <subreddit expression> --pl <post limit> --cl <comment_limit>")
-	print("python bot.py --subreddit <subreddit expression> --post_limit <post limit> --comment_limit <comment limit>")
+	print("python bot.py -s <subreddit expression> -p <post limit> -c <comment_limit> -u <0 or 1>")
+	print("python bot.py -s <subreddit expression> --pl <post limit> --cl <comment_limit> --upload <0 or 1>")
+	print("python bot.py --subreddit <subreddit expression> --post_limit <post limit> --comment_limit <comment limit> --upload_choice <0 or 1>")
 	sys.exit(exit_code)
 
 def get_args(options):
@@ -28,6 +28,7 @@ def get_args(options):
 	subreddit = "AskReddit"
 	post_limit = 10
 	comment_limit = 3
+	upload_choice = 0
 	for option, argument in options:
 		if option in ("-h", "--help"):
 			input_help()
@@ -37,6 +38,8 @@ def get_args(options):
 			post_limit = int(argument)
 		elif option in ("-c", "--cl", "--comment_limit"):
 			comment_limit = int(argument)
+		elif option in ("-u", "--upload", "--upload_choice"):
+			upload_choice = int(argument)
 		else:
 			input_help(1)
-	return subreddit, post_limit, comment_limit
+	return subreddit, post_limit, comment_limit, upload_choice
