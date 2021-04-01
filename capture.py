@@ -55,9 +55,9 @@ class Capturer:
 		y = int(location["y"])
 		width =  x + int(size['width'])
 		height = y + int(size['height'])
-		self.__crop_screenshot(x, y, width, height, post_number, save_path)
+		self.__crop_screenshot(x, y, width, height, save_path)
 
-	def __crop_screenshot(self, x, y, width, height, post_number, uncropped_path):
+	def __crop_screenshot(self, x, y, width, height, uncropped_path):
 		"""
 		Crops a given screenshot and saves it.
 		"""
