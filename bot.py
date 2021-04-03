@@ -58,6 +58,9 @@ def scrape_reddit(reddit: praw.Reddit, subreddit: praw.models.reddit.subreddit.S
 
 
 def upload_to_reddit(reddit: praw.Reddit) -> None:
+	"""
+	Uploads the made video to the subreddit r/chill_3046.
+	"""
 	reddit.subreddit("chill_3046").submit_video("Video made via reddio", os.path.abspath("videos/final_video.mov"), thumbnail_path=os.path.abspath("thumbnail.png"))
 
 
