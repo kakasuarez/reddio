@@ -7,7 +7,7 @@ def get_options(argv):
 	Takes `sys.argv[1:]` as parameter and returns the options chosen. If there is an error with the options, invokes the `input_help` function.
 	"""
 	try:
-		options, arguments = getopt.getopt(argv, "s:p:c:h", ["subreddit=", "post_limit=", "pl=", "comment_limit=", "cl=", "help"])
+		options, arguments = getopt.getopt(argv, "s:p:c:h:u:", ["subreddit=", "post_limit=", "pl=", "comment_limit=", "cl=", "help", "upload="])
 	except getopt.GetoptError:
 		input_help(2)
 	return options
