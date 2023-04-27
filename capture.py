@@ -5,8 +5,8 @@ from time import sleep
 from gtts import gTTS
 from moviepy.editor import (AudioFileClip, ImageClip, VideoFileClip,
                             concatenate_videoclips)
-from PIL import Image
 from selenium import webdriver
+from selenium.webdriver.common.by import By
 
 
 class Capturer:
@@ -32,12 +32,12 @@ class Capturer:
 		"""
 		Takes a screenshot of the given url and crops it.
 		"""
-		save_path = f"images/post_{post_number}_uncropped.png"
+		save_path = f"images/post_{post_number}.png"
 		class_name = "Post"
 		if is_comment:
 			url = "https://reddit.com" + url
 			class_name = "Comment"
-			save_path = f"images/post_{post_number}_comment_{comment_number}_uncropped.png"
+			save_path = f"images/post_{post_number}_comment_{comment_number}.png"
 		try:
 			print(f"Going to url {url}\n")
 			self.driver.get(url)
@@ -47,27 +47,9 @@ class Capturer:
 			self.driver.get(url)
 		
 		print(f"Creating screenshot {save_path}\n")
-		self.driver.save_screenshot(save_path)
-		element = self.driver.find_element_by_class_name(class_name)
-		location = element.location
-		size = element.size
-		x = int(location["x"])
-		y = int(location["y"])
-		width =  x + int(size['width'])
-		height = y + int(size['height'])
-		self.__crop_screenshot(x, y, width, height, save_path)
-
-	def __crop_screenshot(self, x, y, width, height, uncropped_path):
-		"""
-		Crops a given screenshot and saves it.
-		"""
-		print(f"Cropping screenshot {uncropped_path}\n")
-		new_path = uncropped_path.replace("_uncropped", "")
-		img = Image.open(uncropped_path)
-		img = img.crop((x, y, width, height))
-		os.remove(uncropped_path)
-		print(f"Saving cropped screenshot {new_path}\n")
-		img.save(new_path)
+		sleep(15)
+		element = self.driver.find_element(By.CLASS_NAME, class_name)
+		element.screenshot(save_path)
 	
 	def create_videoclip(self, post_number, is_comment=False, comment_number=0):
 		"""
