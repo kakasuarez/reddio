@@ -7,7 +7,8 @@ from moviepy.editor import (AudioFileClip, ImageClip, VideoFileClip,
                             concatenate_videoclips)
 from selenium import webdriver
 from selenium.webdriver.common.by import By
-
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
 
 class Capturer:
 	def __init__(self):
@@ -24,19 +25,40 @@ class Capturer:
 			os.mkdir(directory)
 		
 		self.driver = webdriver.Firefox()
+		self.closed_sign_in_popup = False
 
 	def __del__(self):
 		self.driver.quit()
 	
-	def create_screenshot(self, url, post_number,is_comment=False, comment_number=0):
+	def expand_shadow_element(self, element):
+		# return a list of elements
+		shadowRoot = self.driver.execute_script('return arguments[0].shadowRoot.children', element)
+		return shadowRoot
+
+	def _close_sign_in_popup(self):
+		experience_tree = self.driver.find_element(By.TAG_NAME, "shreddit-experience-tree")
+		first_shadow_root = self.expand_shadow_element(experience_tree)
+		iframe_manager = first_shadow_root[0].find_element(By.TAG_NAME, "accountmanager-iframe")
+		second_shadow_root = self.expand_shadow_element(iframe_manager)
+		iframe_container = second_shadow_root[0]
+		iframe = iframe_container.find_element(By.TAG_NAME, 'iframe')
+		WebDriverWait(self.driver, 10).until(EC.frame_to_be_available_and_switch_to_it((iframe)))
+		WebDriverWait(self.driver, 10).until(EC.frame_to_be_available_and_switch_to_it((By.TAG_NAME, "iframe"))) # There is an iframe inside an iframe.
+
+		# Click on the close popup.
+		WebDriverWait(self.driver, 10).until(EC.element_to_be_clickable((By.ID, "close"))).click()
+		self.driver.switch_to.default_content() # Switch back from the iframes.
+		self.closed_sign_in_popup = True
+
+	def create_screenshot(self, url, post_number,is_comment=False, comment_number=0, has_replies=False):
 		"""
 		Takes a screenshot of the given url and crops it.
 		"""
 		save_path = f"images/post_{post_number}.png"
-		class_name = "Post"
+		class_name = "shreddit-post"
 		if is_comment:
 			url = "https://reddit.com" + url
-			class_name = "Comment"
+			class_name = "shreddit-comment"
 			save_path = f"images/post_{post_number}_comment_{comment_number}.png"
 		try:
 			print(f"Going to url {url}\n")
@@ -45,10 +67,18 @@ class Capturer:
 			print(f"Got an error, retrying in 5 seconds\n")
 			sleep(5)
 			self.driver.get(url)
-		
+		sleep(5) # Prevents various errors by waiting for load.
+		if not self.closed_sign_in_popup: # Only need to close the sign in popup once.
+			self._close_sign_in_popup()
+
 		print(f"Creating screenshot {save_path}\n")
-		sleep(15)
-		element = self.driver.find_element(By.CLASS_NAME, class_name)
+		if is_comment:
+			if has_replies:
+				sc = self.driver.find_element(By.TAG_NAME, 'shreddit-comment')
+				sr = self.expand_shadow_element(sc)[0]
+				minus_button = sr.find_element(By.ID, "comment-fold-button")
+				minus_button.click()
+		element = self.driver.find_element(By.TAG_NAME, class_name)
 		element.screenshot(save_path)
 	
 	def create_videoclip(self, post_number, is_comment=False, comment_number=0):

@@ -27,7 +27,10 @@ def save_comments(post: praw.models.reddit.submission.Submission, cpt: Capturer,
 		if comment.stickied:
 			# Skip stickied comments (most likely bot or moderator comments)
 			continue
-		cpt.create_screenshot(comment.permalink, post_number, is_comment=True, comment_number=comment_number)
+		has_replies = False
+		if len(comment.replies) != 0:
+			has_replies = True
+		cpt.create_screenshot(comment.permalink, post_number, is_comment=True, comment_number=comment_number, has_replies=has_replies)
 		cpt.create_speech(f"{comment.author} said: {comment.body}", post_number, is_comment=True, comment_number=comment_number)
 		cpt.create_videoclip(post_number, is_comment=True,  comment_number=comment_number)
 		if comment_number == comment_limit:
