@@ -2,7 +2,6 @@
 Reddit video maker written in python.
 A simple project which generates videos with audio and images of hot posts on reddit.
 
-**It would be excellent if a better and more efficient way to take screenshots would be used.**
 
 # Set up
 
@@ -24,3 +23,4 @@ A simple project which generates videos with audio and images of hot posts on re
    1. Go to the [geckodriver releases page](https://github.com/mozilla/geckodriver/releases). Find the latest version of the driver for your platform and download it.
    2. Extract it.
    3. (For Windows) Add it to Path using Command Prompt: ```setx path "%path%;GeckoDriver Path"```.
+ - If you want to upload the video to reddit, create a `thumbnail.png` file in the working directory which will be the thumbnail for the video on reddit.
