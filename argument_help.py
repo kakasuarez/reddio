@@ -1,6 +1,6 @@
 import getopt
 import sys
-
+from configuration import get_default_arguments
 
 def get_options(argv):
 	"""
@@ -25,10 +25,12 @@ def get_args(options):
 	"""
 	Takes the options list and returns the chosen `subreddit`, `post_limit`, and `comment_limit`. If some options are not provided, returns the default values for them. If a different option is provided, invokes the `input_help` function.
 	"""
-	subreddit = "AskReddit"
-	post_limit = 10
-	comment_limit = 3
-	upload_choice = 0
+	default_args = get_default_arguments()
+	subreddit = default_args["subreddit"]
+	post_limit = default_args["post_limit"]
+	comment_limit = default_args["comment_limit"]
+	upload_choice = int(default_args["upload_choice"])
+	upload_subreddit = default_args["upload_subreddit"]
 	for option, argument in options:
 		if option in ("-h", "--help"):
 			input_help()
@@ -42,4 +44,4 @@ def get_args(options):
 			upload_choice = int(argument)
 		else:
 			input_help(1)
-	return subreddit, post_limit, comment_limit, upload_choice
+	return subreddit, post_limit, comment_limit, upload_choice, upload_subreddit

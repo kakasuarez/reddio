@@ -6,9 +6,11 @@ from gtts import gTTS
 from moviepy.editor import (AudioFileClip, ImageClip, VideoFileClip,
                             concatenate_videoclips)
 from selenium import webdriver
+from selenium.webdriver.firefox.firefox_binary import FirefoxBinary
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
+from configuration import use_custom_path, get_custom_path
 
 class Capturer:
 	def __init__(self):
@@ -24,7 +26,11 @@ class Capturer:
 			print(f"Creating new directory {directory}\n")
 			os.mkdir(directory)
 		
-		self.driver = webdriver.Firefox()
+		if use_custom_path:
+			binary = FirefoxBinary(get_custom_path())
+			self.driver = webdriver.Firefox(firefox_binary=binary)
+		else:
+			self.driver = webdriver.Firefox()
 		self.closed_sign_in_popup = False
 
 	def __del__(self):

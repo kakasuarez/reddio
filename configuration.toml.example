@@ -1,0 +1,23 @@
+[custom_path]
+
+# true if you have installed the firefox browser at a custom location, false otherwise.
+use_custom_path = false
+
+# Put the path to firefox.exe if you have installed it at a custom location here. Leave empty otherwise.
+custom_path = ""
+
+[DEFAULT]
+# These are default values, can also be changed while running the program.
+subreddit = "AskReddit"
+post_limit = 5
+comment_limit = 3
+
+# true if you want to upload the video, false if you don't.
+upload_choice = false
+
+# The name of the subreddit where you want to upload the video.
+upload_subreddit = ""
+
+[PRAW]
+# The application name which you added in the praw.ini file.
+application = ""

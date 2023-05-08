@@ -4,7 +4,7 @@ import sys
 import praw
 
 from argument_help import get_args, get_options
-from authenticate import authenticate
+from configuration import authenticate
 from capture import Capturer
 
 
@@ -60,20 +60,20 @@ def scrape_reddit(reddit: praw.Reddit, subreddit: praw.models.reddit.subreddit.S
 	cpt.create_final_video(post_number, comment_limit)
 
 
-def upload_to_reddit(reddit: praw.Reddit) -> None:
+def upload_to_reddit(reddit: praw.Reddit, upload_subreddit: str) -> None:
 	"""
 	Uploads the made video to the subreddit r/chill_3046.
 	"""
-	reddit.subreddit("chill_3046").submit_video("Video made via reddio", os.path.abspath("videos/final_video.mov"), thumbnail_path=os.path.abspath("thumbnail.png"))
+	reddit.subreddit(upload_subreddit).submit_video("Video made via reddio", os.path.abspath("videos/final_video.mov"), thumbnail_path=os.path.abspath("thumbnail.png"))
 
 
 def main():
 	options = get_options(sys.argv[1:])
-	subreddit, post_limit, comment_limit, upload_choice = get_args(options)
+	subreddit, post_limit, comment_limit, upload_choice, upload_subreddit = get_args(options)
 	reddit = authenticate()
 	print("Starting\n")
 	scrape_reddit(reddit, subreddit, post_limit, comment_limit)
-	if upload_choice: upload_to_reddit(reddit)
+	if upload_choice: upload_to_reddit(reddit, upload_subreddit)
 
 if __name__ == "__main__":
     main()

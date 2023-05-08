@@ -6,5 +6,5 @@ videos/
 images/
 geckodriver.log
 praw.ini
-authenticate.py
+configuration.toml
 thumbnail.png
