@@ -78,13 +78,16 @@ class Capturer:
 			self._close_sign_in_popup()
 
 		print(f"Creating screenshot {save_path}\n")
+		element = self.driver.find_element(By.TAG_NAME, class_name)
 		if is_comment:
+			if element.get_attribute("collapsed") is not None:
+				# Need to click on the comment to open it.
+				element.click()
 			if has_replies:
 				sc = self.driver.find_element(By.TAG_NAME, 'shreddit-comment')
 				sr = self.expand_shadow_element(sc)[0]
 				minus_button = sr.find_element(By.ID, "comment-fold-button")
 				minus_button.click()
-		element = self.driver.find_element(By.TAG_NAME, class_name)
 		element.screenshot(save_path)
 	
 	def create_videoclip(self, post_number, is_comment=False, comment_number=0):
@@ -109,32 +112,33 @@ class Capturer:
 		Creates the final video by concatenating the previously made videos.
 		"""
 		print("Creating final video\n")
-		audio_paths = []
-		image_paths = []
-		video_paths = []
+		audio_paths = os.listdir("audios")
+		image_paths = os.listdir("images")
+		video_paths = os.listdir("videos")
 		videos = []
 		for i in range(1, post_number):
-			audio_paths.append(f"audios/post_{i}.mp3")
-			image_paths.append(f"images/post_{i}.png")
-			video_paths.append(f"videos/post_{i}.mp4")
 			videos.append(VideoFileClip(f"videos/post_{i}.mp4"))
-			for j in range(1, last_comment_number + 1):
-				audio_paths.append(f"audios/post_{i}_comment_{j}.mp3")
-				image_paths.append(f"images/post_{i}_comment_{j}.png")
-				video_paths.append(f"videos/post_{i}_comment_{j}.mp4")
-				videos.append(VideoFileClip(f"videos/post_{i}_comment_{j}.mp4"))
+			comment_videos = []
+			for j in video_paths:
+				if j.startswith(f"post_{i}_comment"):
+					comment_videos.append(f"videos/{j}")
+			comment_videos.sort() # Just in case comment 2 is placed before comment 1, and so on.
+			for comment_video in comment_videos:
+				videos.append(VideoFileClip(comment_video))
 		final_clip = concatenate_videoclips(videos, method="compose")
 		final_clip.write_videofile("videos/final_video.mov", temp_audiofile='temp-audio-final.m4a', remove_temp=True, codec="mpeg4", audio_codec="aac", preset="medium", fps=24)
 		# Now that everything is done, remove the intermediate videos, audios and images
 		for video in video_paths:
-			print(f"Removing video {video}\n")
-			os.remove(video)
+			if video == "final_video.mov":
+				continue
+			print(f"Removing video videos/{video}\n")
+			os.remove(f"videos/{video}")
 		for audio in audio_paths:
-			print(f"Removing audio {audio}\n")
-			os.remove(audio)
+			print(f"Removing audio audios/{audio}\n")
+			os.remove(f"audios/{audio}")
 		for image in image_paths:
-			print(f"Removing image {image}\n")
-			os.remove(image)
+			print(f"Removing image images/{image}\n")
+			os.remove(f"images/{image}")
 
 
 	def create_speech(self, content, post_number, is_comment=False, comment_number=0):
