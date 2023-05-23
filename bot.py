@@ -4,7 +4,7 @@ import sys
 import praw
 
 from argument_help import get_args, get_options
-from configuration import authenticate
+from configuration import authenticate, sort_by, get_time_filter
 from capture import Capturer
 
 
@@ -45,7 +45,13 @@ def scrape_reddit(reddit: praw.Reddit, subreddit: praw.models.reddit.subreddit.S
 	"""
 	post_number = 1
 	cpt = Capturer()
-	for post in reddit.subreddit(subreddit).hot(limit=post_limit):
+	posts = None
+	sort_choice = sort_by()
+	if sort_choice == "hot":
+		posts = reddit.subreddit(subreddit).hot(limit=post_limit)
+	elif sort_choice == "top":
+		posts = reddit.subreddit(subreddit).top(time_filter=get_time_filter(), limit=post_limit)
+	for post in posts:
 		if is_safe(post):
 			title = post.title
 			author = post.author

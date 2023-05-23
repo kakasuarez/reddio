@@ -18,6 +18,12 @@ upload_choice = false
 # The name of the subreddit where you want to upload the video.
 upload_subreddit = ""
 
+# Sort by hot or top posts.
+sort_by = "hot"
+
+# Time filter for top posts only. Can be one of: "all", "day", "hour", "month", "week", or "year".
+time_filter = "all"
+
 [PRAW]
 # The application name which you added in the praw.ini file.
 application = ""

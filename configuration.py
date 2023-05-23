@@ -16,3 +16,9 @@ def get_custom_path():
 
 def authenticate():
 	return praw.Reddit(data["PRAW"]["application"], user_agent="reddio test bot")
+
+def sort_by():
+    return data["DEFAULT"]["sort_by"]
+
+def get_time_filter():
+    return data["DEFAULT"]["time_filter"]
