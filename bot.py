@@ -31,7 +31,7 @@ def save_comments(post: praw.models.reddit.submission.Submission, cpt: Capturer,
 		if len(comment.replies) != 0:
 			has_replies = True
 		cpt.create_screenshot(comment.permalink, post_number, is_comment=True, comment_number=comment_number, has_replies=has_replies)
-		cpt.create_speech(f"{comment.author} said: {comment.body}", post_number, is_comment=True, comment_number=comment_number)
+		cpt.create_speech(comment.body, post_number, is_comment=True, comment_number=comment_number)
 		cpt.create_videoclip(post_number, is_comment=True,  comment_number=comment_number)
 		if comment_number == comment_limit:
 			break
@@ -54,12 +54,12 @@ def scrape_reddit(reddit: praw.Reddit, subreddit: praw.models.reddit.subreddit.S
 	for post in posts:
 		if is_safe(post):
 			title = post.title
-			author = post.author
+			# author = post.author
 			url = post.url
 			selftext = post.selftext
 			# Getting the post and saving
 			cpt.create_screenshot(url, post_number)
-			cpt.create_speech(f"Post by {author}: {title}\n{selftext}", post_number)
+			cpt.create_speech(f"{title}\n{selftext}", post_number)
 			cpt.create_videoclip(post_number)
 			save_comments(post, cpt, post_number, comment_limit)
 			post_number += 1
