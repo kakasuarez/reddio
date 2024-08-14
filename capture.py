@@ -4,13 +4,17 @@ from time import sleep
 
 from gtts import gTTS
 from moviepy.editor import (AudioFileClip, ImageClip, VideoFileClip,
-                            concatenate_videoclips)
+                            concatenate_videoclips, CompositeVideoClip)
 from selenium import webdriver
 from selenium.webdriver.firefox.firefox_binary import FirefoxBinary
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from configuration import use_custom_path, get_custom_path
+from selenium.common.exceptions import NoSuchWindowException
+import moviepy.video.fx.all as vfx
+import librosa
+import soundfile
 
 class Capturer:
 	def __init__(self):
@@ -49,10 +53,13 @@ class Capturer:
 		iframe_container = second_shadow_root[0]
 		iframe = iframe_container.find_element(By.TAG_NAME, 'iframe')
 		WebDriverWait(self.driver, 10).until(EC.frame_to_be_available_and_switch_to_it((iframe)))
-		WebDriverWait(self.driver, 10).until(EC.frame_to_be_available_and_switch_to_it((By.TAG_NAME, "iframe"))) # There is an iframe inside an iframe.
+		try:
+			WebDriverWait(self.driver, 10).until(EC.frame_to_be_available_and_switch_to_it((By.TAG_NAME, "iframe"))) # There is an iframe inside an iframe.
 
 		# Click on the close popup.
-		WebDriverWait(self.driver, 10).until(EC.element_to_be_clickable((By.ID, "close"))).click()
+			WebDriverWait(self.driver, 10).until(EC.element_to_be_clickable((By.ID, "close"))).click()
+		except NoSuchWindowException:
+			pass
 		self.driver.switch_to.default_content() # Switch back from the iframes.
 		self.closed_sign_in_popup = True
 
@@ -105,8 +112,24 @@ class Capturer:
 		aud_clip = AudioFileClip(aud_path)
 		vid_clip = ImageClip(img_path)
 		vid_clip = vid_clip.set_audio(aud_clip).set_duration(aud_clip.duration)
+		# vid_clip = vid_clip.fx(vfx.speedx, 1.5)
 		vid_clip.write_videofile(out_path, preset="medium", temp_audiofile='temp-audio.m4a', remove_temp=True, codec="mpeg4", audio_codec="aac", fps=24)
+		vid_clip.close()
 	
+	def create_background_video(self, final_clip):
+		"""
+		Creates the background video.
+		"""
+		bg = VideoFileClip("bg.mp4")
+		total_duration = final_clip.duration
+		bg_duration = bg.duration
+		n = total_duration // bg_duration
+		r = total_duration % bg_duration
+		last_clip = bg.subclip(0, r)
+		li = [bg for _ in range(int(n))]
+		li.append(last_clip)
+		return concatenate_videoclips(li)
+
 	def create_final_video(self, post_number, last_comment_number):
 		"""
 		Creates the final video by concatenating the previously made videos.
@@ -126,7 +149,10 @@ class Capturer:
 			for comment_video in comment_videos:
 				videos.append(VideoFileClip(comment_video))
 		final_clip = concatenate_videoclips(videos, method="compose")
-		final_clip.write_videofile("videos/final_video.mov", temp_audiofile='temp-audio-final.m4a', remove_temp=True, codec="mpeg4", audio_codec="aac", preset="medium", fps=24)
+		complete_bg = self.create_background_video(final_clip)
+		v = CompositeVideoClip([complete_bg, final_clip])
+		v.write_videofile("videos/f.avi", temp_audiofile='temp-audio-final.m4a', remove_temp=True, codec="png", audio_codec="aac", preset="medium", fps=24)
+		# final_clip.write_videofile("videos/final_video.avi", temp_audiofile='temp-audio-final.m4a', remove_temp=True, codec="png", audio_codec="aac", preset="medium", fps=24)
 		# Now that everything is done, remove the intermediate videos, audios and images
 		for video in video_paths:
 			if video == "final_video.mov":
@@ -146,8 +172,13 @@ class Capturer:
 		Converts the given content to speech and saves it.
 		"""
 		save_path = f"audios/post_{post_number}.mp3"
+		slow_save_path = f"audios/post_{post_number}_slow.mp3"
 		if is_comment:
 			save_path = f"audios/post_{post_number}_comment_{comment_number}.mp3"
+			slow_save_path = f"audios/post_{post_number}_comment_{comment_number}_slow.mp3"
 		print(f"Creating audio {save_path}\n")
-		audio = gTTS(text=content, lang="en", slow=False)
-		audio.save(save_path)
+		audio = gTTS(text=content, lang="en", slow=False, tld="us")
+		audio.save(slow_save_path)
+		speech, sr = librosa.load(slow_save_path)
+		fast_speech = librosa.effects.time_stretch(speech, rate=1.5)
+		soundfile.write(save_path, fast_speech, sr)
